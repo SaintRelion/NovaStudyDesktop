@@ -7,6 +7,12 @@ Imports SmartPrepModern.APISync.Services
 Imports System.ComponentModel
 
 Namespace Components
+    Public Class ChoiceMetric
+        Public Property Label As String
+        Public Property Percentage As Double
+        Public Property IsCorrect As Boolean
+    End Class
+
     Public Class ItemAnalysisRow
         Implements INotifyPropertyChanged
 
@@ -42,14 +48,16 @@ Namespace Components
         Public Property QuestionId As Integer
         Public Property QuestionText As String
         Public Property CorrectAnswer As String
-        Public Property PctA As Double
-        Public Property PctB As Double
-        Public Property PctC As Double
-        Public Property PctD As Double
-        Public Property IsCorrectA As Boolean
-        Public Property IsCorrectB As Boolean
-        Public Property IsCorrectC As Boolean
-        Public Property IsCorrectD As Boolean
+        Public Property ChoicePercentages As New Dictionary(Of String, Double)(StringComparer.OrdinalIgnoreCase)
+        Public ReadOnly Property ChoiceMetrics As List(Of ChoiceMetric)
+            Get
+                Return ChoicePercentages.Select(Function(pair) New ChoiceMetric With {
+                    .Label = pair.Key,
+                    .Percentage = pair.Value,
+                    .IsCorrect = String.Equals(pair.Key, CorrectAnswer, StringComparison.OrdinalIgnoreCase)
+                }).ToList()
+            End Get
+        End Property
         Public Property PValue As Double
 
         Public ReadOnly Property HasAnalysis As Boolean
@@ -65,13 +73,9 @@ Namespace Components
         End Property
 
         Public Function GetCorrectPct() As Double
-            Select Case CorrectAnswer?.ToUpper()
-                Case "A" : Return PctA
-                Case "B" : Return PctB
-                Case "C" : Return PctC
-                Case "D" : Return PctD
-                Case Else : Return 0
-            End Select
+            If String.IsNullOrWhiteSpace(CorrectAnswer) Then Return 0
+            Dim percentage As Double
+            Return If(ChoicePercentages.TryGetValue(CorrectAnswer, percentage), percentage, 0)
         End Function
 
         Public ReadOnly Property DifficultyTag As String
@@ -92,9 +96,7 @@ Namespace Components
 
         Public ReadOnly Property TopDistractor As String
             Get
-                Dim options = New Dictionary(Of String, Double) From {
-                    {"A", PctA}, {"B", PctB}, {"C", PctC}, {"D", PctD}
-                }
+                Dim options = New Dictionary(Of String, Double)(ChoicePercentages, StringComparer.OrdinalIgnoreCase)
                 ' Remove correct answer
                 options.Remove(CorrectAnswer?.ToUpper())
                 If options.Count = 0 Then Return ""
@@ -107,9 +109,7 @@ Namespace Components
         Public ReadOnly Property DistractorPull As String
             Get
                 Dim correct = GetCorrectPct()
-                Dim options = New Dictionary(Of String, Double) From {
-                    {"A", PctA}, {"B", PctB}, {"C", PctC}, {"D", PctD}
-                }
+                Dim options = New Dictionary(Of String, Double)(ChoicePercentages, StringComparer.OrdinalIgnoreCase)
                 options.Remove(CorrectAnswer?.ToUpper())
                 Dim topWrong = options.Values.DefaultIfEmpty(0).Max()
                 If topWrong > correct Then Return "⚠ HIGH"
@@ -211,8 +211,8 @@ Namespace Components
             End Get
         End Property
 
-        Public Async Function FetchAndCacheAnalysis(examId As Integer) As Task
-            If IsCachedFor(examId) Then Return
+        Public Async Function FetchAndCacheAnalysis(examId As Integer, Optional forceRefresh As Boolean = False) As Task
+            If Not forceRefresh AndAlso IsCachedFor(examId) Then Return
             
             _cachedExamId = -1
             _cachedData.Clear()
@@ -227,18 +227,23 @@ Namespace Components
             Try
                 Dim req As New ItemAnalysisRequest With {.examination_id = examId}
                 Dim rawJson As String = Await ApiService.PostRawAsync("analytics/get_item_analysis", req)
-                If rawJson IsNot Nothing Then
+                Dim parsed = Await Task.Run(Function()
+                    Dim batches As New Dictionary(Of String, JsonObject)(StringComparer.OrdinalIgnoreCase)
+                    If rawJson IsNot Nothing Then
                     Dim root = JsonNode.Parse(rawJson)
                     Dim items = root("items")
                     If TypeOf items Is JsonArray Then
                         For Each item In CType(items, JsonArray)
                             Dim dateKey As String = NormaliseDateKey(item("dateBatch")?.ToString())
                             If Not String.IsNullOrEmpty(dateKey) Then
-                                _cachedData(dateKey) = CType(item, JsonObject)
+                                batches(dateKey) = CType(item, JsonObject)
                             End If
                         Next
                     End If
                 End If
+                    Return batches
+                End Function)
+                _cachedData = parsed
 
                 _cachedExamId = examId
                 pnlPlaceholder.Visibility = Visibility.Visible
@@ -303,13 +308,11 @@ Namespace Components
 
 
         Private Function TopDistractorPct(r As ItemAnalysisRow) As Double
-            ' Returns the highest % among the wrong answers
-            Dim candidates As New List(Of (ans As String, pct As Double)) From {
-                ("A", r.PctA), ("B", r.PctB), ("C", r.PctC), ("D", r.PctD)
-            }
-            Return candidates _
-                .Where(Function(x) x.ans <> r.CorrectAnswer) _
-                .Max(Function(x) x.pct)
+            Return r.ChoicePercentages _
+                .Where(Function(pair) Not String.Equals(pair.Key, r.CorrectAnswer, StringComparison.OrdinalIgnoreCase)) _
+                .Select(Function(pair) pair.Value) _
+                .DefaultIfEmpty(0) _
+                .Max()
         End Function
 
 
@@ -333,11 +336,8 @@ Namespace Components
                 Dim qid = Integer.Parse(kvp.Key)
                 Dim dist = CType(kvp.Value, JsonObject)
 
-                Dim a = SafeDouble(dist("A"))
-                Dim b = SafeDouble(dist("B"))
-                Dim c = SafeDouble(dist("C"))
-                Dim d = SafeDouble(dist("D"))
-                Dim total = a + b + c + d
+                Dim counts = ExtractChoiceCounts(dist)
+                Dim total = counts.Values.Sum()
 
                 Dim analysisNode = jsonObj("analysis")
                 Dim aiText As String = Nothing
@@ -350,10 +350,7 @@ Namespace Components
                     .QuestionId = qid,
                     .QuestionText = dist("question_text")?.ToString(),
                     .CorrectAnswer = dist("correct_answer")?.ToString(),
-                    .PctA = If(total > 0, a / total * 100, 0),
-                    .PctB = If(total > 0, b / total * 100, 0),
-                    .PctC = If(total > 0, c / total * 100, 0),
-                    .PctD = If(total > 0, d / total * 100, 0),
+                    .ChoicePercentages = counts.ToDictionary(Function(pair) pair.Key, Function(pair) If(total > 0, pair.Value / total * 100, 0), StringComparer.OrdinalIgnoreCase),
                     .AiAnalysis = aiText
                 })
                 rowNum += 1
@@ -386,7 +383,7 @@ Namespace Components
                 pnlSummary.Visibility = Visibility.Collapsed
             End If
 
-            RenderBatchStrip()
+            pnlBatchStrip.Visibility = Visibility.Collapsed
 
             Dim sortedKeys = _cachedData.Keys.OrderBy(Function(x) x).ToList()
             Dim currentIdx = sortedKeys.IndexOf(key)
@@ -404,56 +401,31 @@ Namespace Components
                     Dim qId As Integer
                     If Not Integer.TryParse(qIdStr, qId) Then Continue For
 
-                    If prevDist IsNot Nothing AndAlso prevDist.ContainsKey(qIdStr) Then
-                        Dim pqData = CType(prevDist(qIdStr), JsonObject)
-                        Dim pa = SafeDouble(pqData("A"))
-                        Dim pb = SafeDouble(pqData("B"))
-                        Dim pc = SafeDouble(pqData("C"))
-                        Dim pd = SafeDouble(pqData("D"))
-                        Dim ptotal = pa + pb + pc + pd
-                    End If
-
                     Dim qData As JsonNode = prop.Value
-                    Dim a = SafeDouble(qData("A"))
-                    Dim b = SafeDouble(qData("B"))
-                    Dim c = SafeDouble(qData("C"))
-                    Dim d = SafeDouble(qData("D"))
-                    Dim total = a + b + c + d
+                    Dim counts = ExtractChoiceCounts(DirectCast(qData, JsonObject))
+                    Dim total = counts.Values.Sum()
 
                     Dim row As New ItemAnalysisRow With {
                         .RowNumber = index,
                         .QuestionId = qId,
                         .QuestionText = qData("question_text")?.ToString(),
                         .CorrectAnswer = qData("correct_answer")?.ToString(),
-                        .PctA = If(total > 0, a / total * 100, 0),
-                        .PctB = If(total > 0, b / total * 100, 0),
-                        .PctC = If(total > 0, c / total * 100, 0),
-                        .PctD = If(total > 0, d / total * 100, 0),
+                        .ChoicePercentages = counts.ToDictionary(Function(pair) pair.Key, Function(pair) If(total > 0, pair.Value / total * 100, 0), StringComparer.OrdinalIgnoreCase),
                         .AiAnalysis = If(TypeOf aiAnalysis Is JsonObject AndAlso
                                         CType(aiAnalysis, JsonObject).ContainsKey(qIdStr),
                                         CType(aiAnalysis, JsonObject)(qIdStr)?.ToString(),
                                         Nothing)
                     }
 
-                    row.IsCorrectA = (row.CorrectAnswer = "A")
-                    row.IsCorrectB = (row.CorrectAnswer = "B")
-                    row.IsCorrectC = (row.CorrectAnswer = "C")
-                    row.IsCorrectD = (row.CorrectAnswer = "D")
-                    If row.IsCorrectA Then row.PValue = row.PctA
-                    If row.IsCorrectB Then row.PValue = row.PctB
-                    If row.IsCorrectC Then row.PValue = row.PctC
-                    If row.IsCorrectD Then row.PValue = row.PctD
+                    row.PValue = row.GetCorrectPct()
 
                     If prevDist IsNot Nothing AndAlso prevDist.ContainsKey(qIdStr) Then
                         Dim pqData = CType(prevDist(qIdStr), JsonObject)
-                        Dim pa = SafeDouble(pqData("A"))
-                        Dim pb = SafeDouble(pqData("B"))
-                        Dim pc = SafeDouble(pqData("C"))
-                        Dim pd = SafeDouble(pqData("D"))
-                        Dim ptotal = pa + pb + pc + pd
+                        Dim previousCounts = ExtractChoiceCounts(pqData)
+                        Dim ptotal = previousCounts.Values.Sum()
                         If ptotal > 0 Then
-                            Dim correctAns = row.CorrectAnswer?.ToUpper()
-                            row.PrevPValue = If(correctAns = "A", pa, If(correctAns = "B", pb, If(correctAns = "C", pc, If(correctAns = "D", pd, 0)))) / ptotal * 100
+                            Dim correctCount = If(previousCounts.ContainsKey(row.CorrectAnswer), previousCounts(row.CorrectAnswer), 0)
+                            row.PrevPValue = correctCount / ptotal * 100
                             row.HasPrev = True
                         End If
                     End If
@@ -493,18 +465,12 @@ Namespace Components
                     Dim qId As Integer
                     If Not Integer.TryParse(prop.Key, qId) Then Continue For
                     Dim qData = CType(prop.Value, JsonObject)
-                    Dim a = SafeDouble(qData("A"))
-                    Dim b = SafeDouble(qData("B"))
-                    Dim c = SafeDouble(qData("C"))
-                    Dim d = SafeDouble(qData("D"))
-                    Dim total = a + b + c + d
+                    Dim counts = ExtractChoiceCounts(qData)
+                    Dim total = counts.Values.Sum()
                     If total = 0 Then Continue For
 
                     Dim correctAnswer = qData("correct_answer")?.ToString()?.ToUpper()
-                    Dim correctCount = If(correctAnswer = "A", a,
-                                    If(correctAnswer = "B", b,
-                                    If(correctAnswer = "C", c,
-                                    If(correctAnswer = "D", d, 0))))
+                    Dim correctCount = If(counts.ContainsKey(correctAnswer), counts(correctAnswer), 0)
                     Dim pct = correctCount / total * 100
                     correctPcts.Add(pct)
                     If pct >= 80 Then easyCount += 1
@@ -635,6 +601,16 @@ Namespace Components
             Catch
                 Return 0
             End Try
+        End Function
+
+        Private Shared Function ExtractChoiceCounts(node As JsonObject) As Dictionary(Of String, Double)
+            Dim counts As New Dictionary(Of String, Double)(StringComparer.OrdinalIgnoreCase)
+            For Each pair In node
+                If pair.Key = "question_text" OrElse pair.Key = "correct_answer" OrElse pair.Key = "total" Then Continue For
+                Dim value = SafeDouble(pair.Value)
+                counts(pair.Key) = value
+            Next
+            Return counts
         End Function
     End Class
 End Namespace

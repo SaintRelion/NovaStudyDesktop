@@ -19,12 +19,12 @@ Namespace Views.Auth
 
         Private Async Sub Login_Click(sender As Object, e As RoutedEventArgs)
             If String.IsNullOrWhiteSpace(txtUsername.Text) OrElse String.IsNullOrWhiteSpace(txtPassword.Password) Then
-                lblStatus.Text = "Authentication failure: Missing fields."
+                lblStatus.Text = "Enter your username and password."
                 Return
             End If
 
             btnLogin.IsEnabled = False
-            lblStatus.Text = "Verifying security credentials..."
+            lblStatus.Text = "Signing you in..."
 
             Try
                 Dim loginReq As New UserLogin With {
@@ -46,13 +46,13 @@ Namespace Views.Auth
                     ' Handshake with parent window/layout
                     OnSuccess?.Invoke(response.Data.role, response.Data.id)
                 Else
-                    lblStatus.Foreground = New SolidColorBrush(Color.FromRgb(183, 28, 28))
+                    lblStatus.Foreground = New SolidColorBrush(Color.FromRgb(224, 82, 117))
                     lblStatus.Text = response.ErrorMessage 
                     btnLogin.IsEnabled = True
                 End If
 
             Catch ex As Exception
-                lblStatus.Text = "System Error: Connection timeout."
+                lblStatus.Text = "We couldn’t connect. Please try again."
                 btnLogin.IsEnabled = True
             End Try
         End Sub
@@ -67,8 +67,8 @@ Namespace Views.Auth
         End Sub
 
         Private Sub Exit_Click(sender As Object, e As RoutedEventArgs)
-            Dim result = MessageBox.Show("Are you sure you want to exit the SmartPrep system?", 
-                                        "TERMINATE SESSION", 
+            Dim result = MessageBox.Show("Are you sure you want to close NovaStudy?", 
+                                        "Close application", 
                                         MessageBoxButton.YesNo, 
                                         MessageBoxImage.Warning)
 

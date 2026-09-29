@@ -10,10 +10,7 @@ Namespace APISync.Models
         Public Property is_correct As Boolean
         Public Property previous_student_answer As String
         Public Property previous_is_correct As Boolean
-        Public Property option_a_analysis As String
-        Public Property option_b_analysis As String
-        Public Property option_c_analysis As String
-        Public Property option_d_analysis As String
+        Public Property option_analysis As Dictionary(Of String, String)
     End Class
 
 End Namespace

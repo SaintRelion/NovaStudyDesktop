@@ -1,23 +1,23 @@
-<UserControl
+﻿<UserControl
     x:Class="Views.Account.AccountView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    Background="White">
+    Background="{StaticResource AppCanvas}">
     <Grid>
         <materialDesign:Card
             Width="450"
             Padding="40"
             VerticalAlignment="Center"
             materialDesign:ElevationAssist.Elevation="Dp1"
-            UniformCornerRadius="2">
+            UniformCornerRadius="18">
             <StackPanel>
                 <materialDesign:PackIcon
                     Width="64"
                     Height="64"
                     Margin="0,0,0,16"
                     HorizontalAlignment="Center"
-                    Foreground="#1A1A1A"
+                    Foreground="#176B5C"
                     Kind="AccountCircle" />
 
                 <TextBlock
@@ -25,13 +25,13 @@
                     HorizontalAlignment="Center"
                     FontSize="20"
                     FontWeight="Black"
-                    Text="ACCOUNT PROFILE" />
+                    Text="YOUR PROFILE" />
                 <TextBlock
                     x:Name="lblRoleBadge"
                     Margin="0,0,0,32"
                     Padding="8,2"
                     HorizontalAlignment="Center"
-                    Background="#B71C1C"
+                    Background="#176B5C"
                     FontSize="10"
                     FontWeight="Black"
                     Foreground="White"
@@ -47,7 +47,7 @@
                 <TextBox
                     x:Name="txtUsername"
                     Margin="0,20,0,0"
-                    materialDesign:HintAssist.Hint="Username / Badge"
+                    materialDesign:HintAssist.Hint="Username"
                     Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
                 <TextBox
                     x:Name="txtEmail"
@@ -76,9 +76,9 @@
                     x:Name="btnUpdate"
                     Height="50"
                     Margin="0,40,0,0"
-                    Background="#1A1A1A"
+                    Background="#176B5C"
                     Click="UpdateAccount_Click"
-                    Content="SYNCHRONIZE PROFILE"
+                    Content="Save changes"
                     FontWeight="Bold" />
 
                 <TextBlock

@@ -9,8 +9,7 @@ Namespace Components
             InitializeComponent()
         End Sub
 
-        Public Sub LoadItems(items As List(Of QuestionnaireItem), Optional showFormatGuide As Boolean = False)
-            brdFormatGuide.Visibility = If(showFormatGuide, Visibility.Visible, Visibility.Collapsed)
+        Public Sub LoadItems(items As List(Of QuestionnaireItem))
 
             Dim displayList As New List(Of QuestionnaireItem)()
             Dim index As Integer = 1

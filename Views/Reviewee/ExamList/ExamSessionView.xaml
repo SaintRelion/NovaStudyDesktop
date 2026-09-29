@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="Views.Reviewee.ExamSessionView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -65,13 +65,14 @@
                 BorderThickness="0,0,0,1">
                 <StackPanel>
                     <TextBlock
-                        FontSize="24"
-                        FontWeight="Black"
-                        Text="EXAMINATION REPOSITORY" />
+                        FontSize="21"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource AppInk}"
+                        Text="Available assessments" />
                     <TextBlock
                         Margin="0,0,0,15"
-                        Foreground="Gray"
-                        Text="Select an exam to begin your review session." />
+                        Foreground="{StaticResource AppMuted}"
+                        Text="Choose an assessment to begin or continue your review." />
 
                     <Grid>
                         <TextBox
@@ -192,7 +193,7 @@
                                                         Grid.Column="2"
                                                         Padding="8,6"
                                                         VerticalAlignment="Center"
-                                                        Background="#F8F9FA"
+                                                        Background="#F7F8F4"
                                                         CornerRadius="6">
                                                         <StackPanel Orientation="Horizontal">
                                                             <materialDesign:PackIcon
@@ -219,6 +220,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
+            <TextBlock x:Name="txtExamListStatus" Grid.Row="1" Margin="24" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource AppMuted}" Text="No assessments are available yet." Visibility="Collapsed" />
         </Grid>
 
         <local:ActiveExamView

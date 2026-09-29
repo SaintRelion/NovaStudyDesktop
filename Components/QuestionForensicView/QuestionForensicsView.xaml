@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="Components.QuestionForensicsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,7 +8,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
     </UserControl.Resources>
 
-    <Border Background="#F8F9FA" CornerRadius="12">
+    <Border Background="#F7F8F4" CornerRadius="12">
         <Grid>
             <Grid Margin="24">
                 <Grid.RowDefinitions>
@@ -24,7 +24,7 @@
                                 Height="28"
                                 Margin="0,0,8,0"
                                 VerticalAlignment="Center"
-                                Foreground="#6C5CE7"
+                                Foreground="#247968"
                                 Kind="Brain" />
                             <TextBlock
                                 x:Name="txtTitle"
@@ -44,11 +44,11 @@
                         <Button
                             x:Name="btnToggleAI"
                             Margin="0,0,8,0"
-                            BorderBrush="#6C5CE7"
+                            BorderBrush="#247968"
                             Click="ToggleAI_Click"
                             Content="Hide AI Breakdown"
                             FontSize="11"
-                            Foreground="#6C5CE7"
+                            Foreground="#247968"
                             Style="{StaticResource MaterialDesignOutlinedButton}" />
                         <Button
                             HorizontalAlignment="Right"
@@ -168,7 +168,7 @@
                                                             <Setter TargetName="bd" Property="Background" Value="#E9ECEF" />
                                                         </Trigger>
                                                         <Trigger Property="IsSelected" Value="True">
-                                                            <Setter TargetName="bd" Property="Background" Value="#6C5CE7" />
+                                                            <Setter TargetName="bd" Property="Background" Value="#247968" />
                                                             <Setter TargetName="txt" Property="Foreground" Value="White" />
                                                         </Trigger>
                                                     </ControlTemplate.Triggers>
@@ -247,7 +247,7 @@
                                                     VerticalAlignment="Center"
                                                     FontSize="12"
                                                     FontWeight="Bold"
-                                                    Foreground="#6C5CE7"
+                                                    Foreground="#247968"
                                                     Text="{Binding SlotName}" />
                                                 <Border
                                                     x:Name="bdgStatus"
@@ -359,14 +359,14 @@
                                                             Width="14"
                                                             Height="14"
                                                             VerticalAlignment="Center"
-                                                            Foreground="#6C5CE7"
+                                                            Foreground="#247968"
                                                             Kind="AutoFix" />
                                                         <TextBlock
                                                             Margin="6,0,0,0"
                                                             VerticalAlignment="Center"
                                                             FontSize="11"
                                                             FontWeight="Black"
-                                                            Foreground="#6C5CE7"
+                                                            Foreground="#247968"
                                                             Text="AI LOGIC BREAKDOWN" />
                                                     </StackPanel>
 
@@ -383,53 +383,16 @@
                                                         Text="{Binding CorrectAnswer}"
                                                         TextWrapping="Wrap" />
 
-                                                    <TextBlock
-                                                        FontSize="10"
-                                                        FontWeight="Black"
-                                                        Opacity="0.5"
-                                                        Text="Option (A)" />
-                                                    <TextBlock
-                                                        Margin="0,2,0,8"
-                                                        FontSize="13"
-                                                        Opacity="0.8"
-                                                        Text="{Binding OptionA_Analysis}"
-                                                        TextWrapping="Wrap" />
-
-                                                    <TextBlock
-                                                        FontSize="10"
-                                                        FontWeight="Black"
-                                                        Opacity="0.5"
-                                                        Text="Option (B)" />
-                                                    <TextBlock
-                                                        Margin="0,2,0,8"
-                                                        FontSize="13"
-                                                        Opacity="0.8"
-                                                        Text="{Binding OptionB_Analysis}"
-                                                        TextWrapping="Wrap" />
-
-                                                    <TextBlock
-                                                        FontSize="10"
-                                                        FontWeight="Black"
-                                                        Opacity="0.5"
-                                                        Text="Option (C)" />
-                                                    <TextBlock
-                                                        Margin="0,2,0,8"
-                                                        FontSize="13"
-                                                        Opacity="0.8"
-                                                        Text="{Binding OptionC_Analysis}"
-                                                        TextWrapping="Wrap" />
-
-                                                    <TextBlock
-                                                        FontSize="10"
-                                                        FontWeight="Black"
-                                                        Opacity="0.5"
-                                                        Text="Option (D)" />
-                                                    <TextBlock
-                                                        Margin="0,2,0,0"
-                                                        FontSize="13"
-                                                        Opacity="0.8"
-                                                        Text="{Binding OptionD_Analysis}"
-                                                        TextWrapping="Wrap" />
+                                                    <ItemsControl ItemsSource="{Binding OptionAnalysis}">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Margin="0,0,0,8">
+                                                                    <TextBlock FontSize="10" FontWeight="Black" Opacity="0.5" Text="{Binding Key, StringFormat='Option ({0})'}" />
+                                                                    <TextBlock Margin="0,2,0,0" FontSize="13" Opacity="0.8" Text="{Binding Value}" TextWrapping="Wrap" />
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
                                                 </StackPanel>
                                             </Border>
                                         </StackPanel>

@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
         x:Class="Views.ReviewDirector.GenerateView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,7 +10,7 @@
         d:DesignWidth="1280"
         mc:Ignorable="d">
 
-        <Grid Background="#F5F7FA">
+        <Grid Background="#F5F3EE">
                 <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="1.2*" />

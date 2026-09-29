@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
         x:Class="Views.ReviewDirector.SlotsView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -27,7 +27,7 @@
                                                                         Text="NEW CATEGORY" />
                                                                 <TextBox
                                                                         x:Name="txtNewCategoryName"
-                                                                        materialDesign:HintAssist.Hint="Category Name (e.g., Criminal Law)"
+                                                                        materialDesign:HintAssist.Hint="Category name (e.g., Data Science)"
                                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
                                                                 <StackPanel
                                                                         Margin="0,24,0,0"
@@ -78,7 +78,7 @@
                                         </Border>
                                 </materialDesign:DialogHost.DialogContent>
 
-                                <Grid Background="#F5F7FA">
+                                <Grid Background="#F5F3EE">
                                         <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="*" />
@@ -92,13 +92,14 @@
                                                         <StackPanel Orientation="Horizontal">
                                                                 <StackPanel VerticalAlignment="Center">
                                                                         <TextBlock
-                                                                                FontSize="24"
-                                                                                FontWeight="Black"
-                                                                                Text="REPOSITORY MANAGEMENT" />
+                                                                                FontSize="21"
+                                                                                FontWeight="SemiBold"
+                                                                                Foreground="{StaticResource AppInk}"
+                                                                                Text="Organize learning content" />
                                                                         <TextBlock
                                                                                 FontSize="12"
-                                                                                Opacity="0.5"
-                                                                                Text="Unified Study Materials and AI-Extracted Questions" />
+                                                                                Foreground="{StaticResource AppMuted}"
+                                                                                Text="Pair source material with human-authored questionnaires." />
                                                                 </StackPanel>
 
                                                                 <Separator
@@ -111,9 +112,9 @@
                                                                         <TextBlock
                                                                                 VerticalAlignment="Center"
                                                                                 FontSize="11"
-                                                                                FontWeight="Black"
-                                                                                Opacity="0.4"
-                                                                                Text="CATEGORY FILTER:" />
+                                                                                FontWeight="SemiBold"
+                                                                                Foreground="{StaticResource AppMuted}"
+                                                                                Text="CATEGORY" />
 
                                                                         <ComboBox
                                                                                 x:Name="cmbCategoryFilter"
@@ -165,11 +166,12 @@
                                                 IsIndeterminate="True"
                                                 Style="{StaticResource MaterialDesignCircularProgressBar}" />
                                         <TextBlock
+                                                x:Name="txtLoadingStatus"
                                                 Margin="0,12,0,0"
                                                 HorizontalAlignment="Center"
                                                 FontSize="12"
                                                 FontWeight="Black"
-                                                Text="SYNCING DATA..." />
+                                                Text="PROCESSING REQUEST..." />
                                 </StackPanel>
                         </materialDesign:Card>
                 </Grid>

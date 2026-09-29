@@ -1,8 +1,24 @@
 # SmartPrep Modern
 
-SmartPrep Modern is the Windows desktop client for **SmartPrep**, a criminology review and examination platform built as a client-server system. It provides role-specific workflows for review directors, reviewees, and administrators.
+SmartPrep Modern is the Windows desktop client for **NovaStudy**, a source-grounded assessment and learning platform. It provides role-specific workflows for instructors, learners, and administrators.
 
-> **Project context:** SmartPrep was developed in under two months as an end-to-end desktop and backend system combining exam workflows, analytics, PDF processing, background jobs, real-time updates, and LLM-assisted analysis.
+> **Project context:** The platform was developed as an end-to-end desktop and backend system combining assessment workflows, analytics, document processing, background jobs, and source-grounded LLM analysis.
+
+## Project evolution
+
+The original client version was built around local Ollama inference with a
+Qwen model. Limited local hardware led to an AWS G6 GPU deployment, but its
+roughly PHP 50 hourly operating cost meant the inference server could not
+remain online continuously. The backend consequently queued pending analysis
+until the GPU server was available, while a heuristic questionnaire extractor
+was introduced to meet the client's requirement for near-instant uploads.
+
+The current NovaStudy version is a broader technical and product rebuild. Its
+backend now uses Django REST Framework and Django migrations, OpenRouter
+replaces the dedicated GPU inference deployment, and Redis/Celery provides
+event-triggered rather than periodically polled analysis. The desktop was
+redesigned and generalized from its original subject-specific presentation
+into a source-grounded assessment platform with dynamic answer choices.
 
 ## Key features
 
@@ -30,11 +46,10 @@ SmartPrep Modern is the Windows desktop client for **SmartPrep**, a criminology 
 - WPF / VB.NET / .NET 9
 - Material Design
 - LiveCharts
-- REST API + WebSockets
-- FastAPI backend
+- Django REST API
 - MySQL
 - Redis + Celery
-- Ollama-backed LLM workflows
+- OpenRouter-backed LLM workflows
 
 The desktop client keeps API communication separate from the UI through domain repositories, shared HTTP services, and request/response models.
 

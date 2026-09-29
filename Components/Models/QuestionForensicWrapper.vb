@@ -34,10 +34,7 @@ Namespace Components.Models
             Public Property IsCorrect As Boolean
             
             ' Full Option Analysis
-            Public Property OptionA_Analysis As String
-            Public Property OptionB_Analysis As String
-            Public Property OptionC_Analysis As String
-            Public Property OptionD_Analysis As String
+            Public Property OptionAnalysis As Dictionary(Of String, String)
             
             ' For Comparative Logic
             Public Property IsComparative As Boolean = False

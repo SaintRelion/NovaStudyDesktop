@@ -39,7 +39,7 @@ Namespace Components
         End Sub
 
         Public Sub ShowRevieweeStrip()
-            If _allReviewees IsNot Nothing AndAlso _allReviewees.Count > 1 Then
+            If _allReviewees IsNot Nothing AndAlso _allReviewees.Count > 0 Then
                 pnlRevieweeStrip.Visibility = Visibility.Visible
                 colRevieweeStrip.Width = New GridLength(200)
             End If
@@ -71,6 +71,7 @@ Namespace Components
                     txtSubtitle.Text = "Select a reviewee to view their scorecard."
                     txtItemCount.Text = ""
                 End Sub)
+                If _allReviewees.Count = 1 Then lstReviewees.SelectedIndex = 0
             Else
                 txtSubtitle.Text = ""
                 Await FetchAndDisplay(userId, attemptIndex)
@@ -137,6 +138,7 @@ Namespace Components
 
         Private Async Function FetchAndDisplay(userId As Integer, resolvedAttemptIndex As Integer) As Task
             pnlLoadingOverlay.Visibility = Visibility.Visible
+            lstForensicQuestions.ItemsSource = Nothing
             Try
                 Dim req As New ForensicAttemptRequest With {
                     .examination_id = _currentExamId,
@@ -144,7 +146,10 @@ Namespace Components
                     .attempt_index = resolvedAttemptIndex
                 }
                 Dim resp = Await AnalyticsRepo.get_attempt_forensicsAsync(req)
-                If resp Is Nothing OrElse resp.Data Is Nothing OrElse Not resp.Data.Success OrElse resp.Data.comparative_items Is Nothing Then Return
+                If resp Is Nothing OrElse Not resp.Success OrElse resp.Data Is Nothing OrElse Not resp.Data.Success OrElse resp.Data.comparative_items Is Nothing Then
+                    txtSubtitle.Text = "Could not load item details. Please try again."
+                    Return
+                End If
 
                 Dim filtered = If(_categoryId > 0,
                     resp.Data.comparative_items.Where(Function(x) x.category_id = _categoryId).ToList(),
@@ -152,6 +157,7 @@ Namespace Components
 
                 Dim wrappers = BuildWrappers(filtered)
                 Me.Dispatcher.Invoke(Sub() LoadForensics(wrappers))
+                If wrappers.Count = 0 Then txtSubtitle.Text = "No question results found for this attempt."
 
                 btnToggleAI.Content = If(_showAI, "Hide AI Breakdown", "Show AI Breakdown")
 
@@ -160,6 +166,9 @@ Namespace Components
                         item.IsAIVisible = _showAI
                     Next
                 End If
+            Catch ex As Exception
+                txtSubtitle.Text = "Could not load item details. Please try again."
+                Debug.WriteLine(ex.Message)
             Finally
                 Me.Dispatcher.Invoke(Sub() pnlLoadingOverlay.Visibility = Visibility.Collapsed)
             End Try
@@ -193,10 +202,7 @@ Namespace Components
                 .CorrectAnswer = log.correct_answer,
                 .StudentAnswer = log.student_answer,
                 .IsCorrect = log.is_correct,
-                .OptionA_Analysis = log.option_a_analysis,
-                .OptionB_Analysis = log.option_b_analysis,
-                .OptionC_Analysis = log.option_c_analysis,
-                .OptionD_Analysis = log.option_d_analysis,
+                .OptionAnalysis = log.option_analysis,
                 .IsComparative = Not String.IsNullOrWhiteSpace(log.previous_student_answer),
                 .PreviousAnswer = log.previous_student_answer,
                 .WasCorrect = log.previous_is_correct

@@ -41,10 +41,10 @@ Namespace Views.Auth
                 Dim response = Await AuthRepo.registerAsync(regReq)
 
                 If response.Success Then
-                    MessageBox.Show("Personnel Enlistment Successful. Credentials stored.", "System Update", MessageBoxButton.OK, MessageBoxImage.Information)
+                    MessageBox.Show("Your account is ready. You can now sign in.", "Account created", MessageBoxButton.OK, MessageBoxImage.Information)
                     RaiseEvent RequestNavigateToLogin(Me, EventArgs.Empty)
                 Else
-                    lblRegStatus.Text = $"Enlistment Rejected: {response.ErrorMessage}"
+                    lblRegStatus.Text = $"Account could not be created: {response.ErrorMessage}"
                     btnRegister.IsEnabled = True
                 End If
 

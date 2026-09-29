@@ -7,8 +7,6 @@ Namespace Layout
     Public Class MainLayout
         Inherits UserControl ' Necessary for VB inheritance
 
-        Private _criminologyRed As New SolidColorBrush(Color.FromRgb(183, 28, 28))
-
         Public Sub New()
             InitializeComponent()
             LoadSidebar()
@@ -19,87 +17,39 @@ Namespace Layout
         End Sub
 
         Public Sub LockSidebar(lock As Boolean)
-            ' 1. Minimize Sidebar
-            SidebarColumn.Width = New GridLength(If(lock, 60, 220))
-            
-            ' 2. Visibility Sync
-            Dim visibilityState = If(lock, Visibility.Collapsed, Visibility.Visible)
-            txtBrand.Visibility = visibilityState
-            txtLogout.Visibility = visibilityState
-            ToggleSidebarText(visibilityState)
-
-            ' 3. Lockdown Interactivity
             For Each child In SidebarButtons.Children
                 Dim btn = TryCast(child, Button)
                 If btn IsNot Nothing Then
                     btn.IsEnabled = Not lock
-                    btn.Opacity = If(lock, 0.4, 1.0) ' Forensic "Disabled" Look
+                    btn.Opacity = If(lock, 0.4, 1.0)
                 End If
             Next
-            
-            ' 4. Prevent Hamburger usage
-            ' Assuming btnHamburger is the name of your menu button
-            btnHamburger.IsEnabled = Not lock
             btnLogout.IsEnabled = Not lock
         End Sub
 
         Private Sub LoadSidebar()
             SidebarButtons.Children.Clear()
 
-            ' ── ANALYTICS Section ──────────────────────────────────────
-            AddSectionLabel("ANALYTICS")
-            AddSidebarButton("EXAM ANALYTICS", "ViewDashboard", AddressOf ExamAnalytics_Click)
-            AddSidebarButton("COMPARATIVE", "ChartAreaspline", AddressOf ComparisonAnalytics_Click)
-            AddSidebarButton("LEADERBOARD", "TrophyVariant", AddressOf Leaderboard_Click)
+            AddSidebarButton("Performance", "ViewDashboard", AddressOf ExamAnalytics_Click)
+            AddSidebarButton("Progress", "ChartAreaspline", AddressOf ComparisonAnalytics_Click)
+            AddSidebarButton("Leaderboard", "TrophyVariant", AddressOf Leaderboard_Click)
 
-            ' ── ROLE-BASED Section ─────────────────────────────────────
             Select Case UserSession.Role
                 Case "Admin"
-                    AddSectionSeparator()
-                    AddSectionLabel("MANAGEMENT")
-                    AddSidebarButton("MANAGE USERS", "AccountGroup", AddressOf ManageUsers_Click)
+                    AddSidebarButton("People", "AccountGroup", AddressOf ManageUsers_Click)
                 Case "ReviewDirector"
-                    AddSectionSeparator()
-                    AddSectionLabel("CONTENT")
-                    AddSidebarButton("UPLOAD SLOTS", "Library", AddressOf UploadSlots_Click)
-                    AddSidebarButton("GENERATE EXAM", "AutoFix", AddressOf Generate_Click)
-                    AddSidebarButton("MANAGE EXAMS", "ClipboardEdit", AddressOf ManageExams_Click)
+                    AddSidebarButton("Learning library", "Library", AddressOf UploadSlots_Click)
+                    AddSidebarButton("Create assessment", "AutoFix", AddressOf Generate_Click)
+                    AddSidebarButton("Assessments", "ClipboardEdit", AddressOf ManageExams_Click)
                 Case "Reviewee"
-                    AddSectionSeparator()
-                    AddSectionLabel("EXAMS")
-                    AddSidebarButton("EXAM LIST", "ClipboardList", AddressOf ExamSession_Click)
+                    AddSidebarButton("My assessments", "ClipboardList", AddressOf ExamSession_Click)
             End Select
 
-            ' ── ACCOUNT Section ────────────────────────────────────────
-            AddSectionSeparator()
-            AddSectionLabel("ACCOUNT")
-            AddSidebarButton("ACCOUNT", "AccountCircle", AddressOf Account_Click)
+            AddSidebarButton("Profile", "AccountCircle", AddressOf Account_Click)
 
             ' Load first nav button view
             Dim firstBtn = SidebarButtons.Children.OfType(Of Button)().FirstOrDefault()
             If firstBtn IsNot Nothing Then LoadView(firstBtn, DirectCast(firstBtn.Tag, RoutedEventHandler))
-        End Sub
-
-        Private Sub AddSectionLabel(text As String)
-            Dim label As New TextBlock With {
-                .Text = text,
-                .FontSize = 10,
-                .FontWeight = FontWeights.Bold,
-                .Foreground = New SolidColorBrush(Color.FromRgb(120, 120, 120)),
-                .Margin = New Thickness(15, 10, 0, 4),
-                .Visibility = If(SidebarColumn.Width.Value > 60, Visibility.Visible, Visibility.Collapsed)
-            }
-            label.SetValue(FrameworkElement.TagProperty, "SectionLabel")
-            SidebarButtons.Children.Add(label)
-        End Sub
-
-        Private Sub AddSectionSeparator()
-            Dim sep As New Separator With {
-                .Margin = New Thickness(15, 6, 15, 2),
-                .Background = New SolidColorBrush(Color.FromRgb(51, 51, 51))
-            }
-            sep.SetValue(FrameworkElement.TagProperty, "SectionSeparator")
-            SidebarButtons.Children.Add(sep)
         End Sub
 
         Private Sub AddSidebarButton(text As String, iconKind As String, handler As RoutedEventHandler)
@@ -109,8 +59,8 @@ Namespace Layout
             ' Icon
             Dim icon As New PackIcon With {
                 .Kind = DirectCast([Enum].Parse(GetType(PackIconKind), iconKind), PackIconKind),
-                .Width = 22, .Height = 22,
-                .Margin = New Thickness(15, 0, 15, 0),
+                .Width = 18, .Height = 18,
+                .Margin = New Thickness(0, 0, 8, 0),
                 .VerticalAlignment = VerticalAlignment.Center
             }
 
@@ -118,8 +68,7 @@ Namespace Layout
             Dim txt As New TextBlock With {
                 .Text = text,
                 .VerticalAlignment = VerticalAlignment.Center,
-                .FontSize = 13, .FontWeight = FontWeights.SemiBold,
-                .Visibility = If(SidebarColumn.Width.Value > 60, Visibility.Visible, Visibility.Collapsed)
+                .FontSize = 13, .FontWeight = FontWeights.SemiBold
             }
 
             contentStack.Children.Add(icon)
@@ -128,11 +77,13 @@ Namespace Layout
             ' The Button
             Dim btn As New Button With {
                 .Content = contentStack,
-                .Height = 50,
-                .HorizontalContentAlignment = HorizontalAlignment.Left,
+                .Height = 38,
+                .Margin = New Thickness(3, 0, 3, 0),
+                .Padding = New Thickness(14, 0, 14, 0),
+                .HorizontalContentAlignment = HorizontalAlignment.Center,
                 .Background = Brushes.Transparent,
                 .BorderThickness = New Thickness(0),
-                .Foreground = Brushes.LightGray,
+                .Foreground = New SolidColorBrush(Color.FromRgb(70, 93, 88)),
                 .Style = TryCast(Application.Current.FindResource("MaterialDesignFlatButton"), Style),
                 .Tag = handler
             }
@@ -144,13 +95,12 @@ Namespace Layout
         Private Sub LoadView(selectedBtn As Button, handler As RoutedEventHandler)
             ' Reset all buttons to "inactive" look
             For Each btn As Button In SidebarButtons.Children.OfType(Of Button)()
-                btn.Foreground = Brushes.LightGray
+                btn.Foreground = New SolidColorBrush(Color.FromRgb(70, 93, 88))
                 btn.Background = Brushes.Transparent
             Next
 
-            ' Set active button style (The Criminology Red Highlight)
             selectedBtn.Foreground = Brushes.White
-            selectedBtn.Background = New SolidColorBrush(Color.FromArgb(30, 183, 28, 28)) ' Subtle red tint
+            selectedBtn.Background = New SolidColorBrush(Color.FromRgb(23, 107, 92))
             
             ' Update Header Title based on button text
             Dim sp = TryCast(selectedBtn.Content, StackPanel)
@@ -160,33 +110,9 @@ Namespace Layout
             handler.Invoke(selectedBtn, New RoutedEventArgs())
         End Sub
 
-        Private Sub Hamburger_Click(sender As Object, e As RoutedEventArgs)
-            Dim isCollapsed As Boolean = SidebarColumn.Width.Value > 60
-            SidebarColumn.Width = New GridLength(If(isCollapsed, 60, 220))
-            
-            txtBrand.Visibility = If(isCollapsed, Visibility.Collapsed, Visibility.Visible)
-            txtLogout.Visibility = If(isCollapsed, Visibility.Collapsed, Visibility.Visible)
-            ToggleSidebarText(If(isCollapsed, Visibility.Collapsed, Visibility.Visible))
-        End Sub
-
-        Private Sub ToggleSidebarText(vis As Visibility)
-            ' Toggle button labels
-            For Each btn As Button In SidebarButtons.Children.OfType(Of Button)()
-                Dim sp = TryCast(btn.Content, StackPanel)
-                If sp IsNot Nothing Then sp.Children(1).Visibility = vis
-            Next
-            ' Toggle section labels (TextBlock with tag "SectionLabel")
-            For Each child As UIElement In SidebarButtons.Children
-                Dim tb = TryCast(child, TextBlock)
-                If tb IsNot Nothing AndAlso tb.Tag?.ToString() = "SectionLabel" Then
-                    tb.Visibility = vis
-                End If
-            Next
-        End Sub
-
         ' --- View Handlers remain the same, ensuring paths match your project ---
         Private Sub Logout_Click(sender As Object, e As RoutedEventArgs)
-            If MessageBox.Show("Terminate current session?", "Security Prompt", MessageBoxButton.YesNo) = MessageBoxResult.Yes Then
+            If MessageBox.Show("Sign out of your current session?", "Sign out", MessageBoxButton.YesNo) = MessageBoxResult.Yes Then
                 UserSession.Logout()
                 Dim parentWin = Window.GetWindow(Me)
                 If TypeOf parentWin Is MainWindow Then CType(parentWin, MainWindow).ShowLogin()

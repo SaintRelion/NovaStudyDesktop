@@ -5,7 +5,6 @@ Namespace APISync.Models
         Public Property examination_id As Integer
         Public Property question_id As Integer
         Public Property answer_text As String
-        Public Property correct_answer As String
     End Class
 
 End Namespace

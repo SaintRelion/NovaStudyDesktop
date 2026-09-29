@@ -67,6 +67,7 @@ Namespace Views.Analytics
             tbSelectedExamTitle.Visibility = Visibility.Visible
 
             CollapseExamListPanel()
+            HideAnalysisPanel()
 
             If UserSession.Role = "Reviewee" Then
                 _currentUserId = UserSession.UserID
@@ -78,7 +79,6 @@ Namespace Views.Analytics
 
             Await Task.WhenAll(
                 revieweesTask,
-                ctrlItemAnalysis.FetchAndCacheAnalysis(exam.id),
                 RefreshTrend(_currentUserId)
             )
 
@@ -135,25 +135,24 @@ Namespace Views.Analytics
             _lastClickedReviewees = If(reviewees?.Count > 0, reviewees, If(ctrlReviewees.GetLoadedReviewees(), New List(Of RevieweeStatusOut)()))
             _lastClickedAttemptMap = If(attemptMap, New Dictionary(Of Integer, Integer)())  
 
-            If UserSession.Role = "Reviewee" Then
+            ShowAnalysisPanel()
+            pnlLoading.Visibility = Visibility.Visible
+            Try
+                Await Dispatcher.InvokeAsync(Sub() pnlLoading.UpdateLayout(), DispatcherPriority.Render)
+                Await ctrlItemAnalysis.FetchAndCacheAnalysis(examId, forceRefresh:=True)
+                If examId <> _currentExamId Then Return
+                ctrlItemAnalysis.RenderDateAnalysis(isoDate)
                 ctrlItemAnalysis.SetSelectedDate(isoDate)
-                ShowAnalysisPanelPartial()
-                Return
-            End If
-
-            ' Director Only
-            If Not ctrlItemAnalysis.IsCachedFor(examId) Then
-                Await ctrlItemAnalysis.FetchAndCacheAnalysis(examId)
-            End If
-
-            ctrlItemAnalysis.RenderDateAnalysis(isoDate)
-            ctrlItemAnalysis.PopulateGrid(isoDate)
-            If ctrlItemAnalysis.Visibility <> Visibility.Visible Then
-                ShowAnalysisPanel()
-            End If
+            Finally
+                pnlLoading.Visibility = Visibility.Collapsed
+            End Try
         End Sub
 
         Private Async Sub HandleDeepAnalysis(sender As Object, examId As Integer, isoDate As String)
+            Await OpenDeepAnalysis(examId, isoDate)
+        End Sub
+
+        Private Async Function OpenDeepAnalysis(examId As Integer, isoDate As String) As Task
             ctrlDeepAnalysis.Visibility = Visibility.Visible
             ctrlDeepAnalysis.SetReviewees(_lastClickedReviewees, examId, _lastClickedAttemptIndex, -1, _lastClickedAttemptMap)
             ' MessageBox.Show($"userId:{_lastClickedUserId} attempt:{_lastClickedAttemptIndex} date:{isoDate}")
@@ -167,7 +166,7 @@ Namespace Views.Analytics
 
             Await ctrlDeepAnalysis.LoadContext(examId, _lastClickedUserId, _lastClickedAttemptIndex, -1, isoDate)
             pnlDeepAnalysisOverlay.Visibility = Visibility.Visible
-        End Sub
+        End Function
 
         Private Sub HandleForensicClose()
             pnlDeepAnalysisOverlay.Visibility = Visibility.Collapsed
@@ -176,9 +175,11 @@ Namespace Views.Analytics
 
         Private Sub ShowAnalysisPanel()
             _analysisExpanded = True
+            pnlChartContainer.Visibility = Visibility.Collapsed
+            pnlAnalysisHeader.Visibility = Visibility.Visible
             ctrlItemAnalysis.Visibility = Visibility.Visible
-            AnimateGridRow(rowChart.Height, New GridLength(0, GridUnitType.Star),
-                        rowAnalysis.Height, New GridLength(1, GridUnitType.Star))
+            rowChart.Height = New GridLength(0)
+            rowAnalysis.Height = New GridLength(1, GridUnitType.Star)
         End Sub
 
         Private Sub ShowAnalysisPanelPartial()
@@ -190,10 +191,11 @@ Namespace Views.Analytics
 
         Private Sub CollapseAnalysisPanel()
             _analysisExpanded = False
-            ' Chart comes back full, analysis goes to 0
-            AnimateGridRow(rowChart.Height, New GridLength(1, GridUnitType.Star),
-                        rowAnalysis.Height, New GridLength(0, GridUnitType.Star),
-                        onComplete:=Sub() ctrlItemAnalysis.Visibility = Visibility.Collapsed)
+            ctrlItemAnalysis.Visibility = Visibility.Collapsed
+            pnlAnalysisHeader.Visibility = Visibility.Collapsed
+            pnlChartContainer.Visibility = Visibility.Visible
+            rowChart.Height = _rowChartFull
+            rowAnalysis.Height = _rowAnalysisFull
         End Sub
 
 
@@ -201,6 +203,8 @@ Namespace Views.Analytics
             _analysisExpanded = False
             ctrlItemAnalysis.Visibility = Visibility.Collapsed
             ctrlItemAnalysis.ClearAndReset()
+            pnlAnalysisHeader.Visibility = Visibility.Collapsed
+            pnlChartContainer.Visibility = Visibility.Visible
             rowChart.Height = _rowChartFull
             rowAnalysis.Height = _rowAnalysisFull
         End Sub
@@ -209,11 +213,7 @@ Namespace Views.Analytics
             If _analysisExpanded Then
                 CollapseAnalysisPanel()
             Else
-                If UserSession.Role = "Reviewee" Then
-                    ShowAnalysisPanelPartial()
-                Else
-                    ShowAnalysisPanel()
-                End If
+                ShowAnalysisPanel()
             End If
         End Sub
 

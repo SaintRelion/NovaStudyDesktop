@@ -29,6 +29,9 @@ Namespace Views.ReviewDirector
 
         Private Async Sub HandleExamSelected(sender As Object, exam As ExamListOut)
             _selectedExamId = exam.id
+            _currentQuestions.Clear()
+            btnPreview.IsEnabled = False
+            btnPreview.Content = "LOADING QUESTIONS..."
             
             ' UI Visibility Swap
             pnlGlobalSettings.Visibility = Visibility.Collapsed
@@ -41,8 +44,9 @@ Namespace Views.ReviewDirector
             Try
                 Dim req As New ExamGetRequest With {.exam_id = _selectedExamId}
                 Dim resp = Await ExamRepo.get_examAsync(req)
+                If exam.id <> _selectedExamId Then Return
 
-                If resp?.Success Then
+                If resp IsNot Nothing AndAlso resp.Success AndAlso resp.Data IsNot Nothing AndAlso resp.Data.questions IsNot Nothing Then
                     txtItemCount.Text = resp.Data.total_items.ToString()
                     icTopicPills.ItemsSource = resp.Data.topics
                     
@@ -54,17 +58,19 @@ Namespace Views.ReviewDirector
                             .correct_answer = q.answer,
                             .choices = New Dictionary(Of String, String)()
                         }
-                        item.choices.Add("A", q.option_a)
-                        item.choices.Add("B", q.option_b)
-                        item.choices.Add("C", q.option_c)
-                        item.choices.Add("D", q.option_d)
+                        item.choices = New Dictionary(Of String, String)(q.choices)
                         Return item
                     End Function).ToList()
+                    btnPreview.IsEnabled = _currentQuestions.Count > 0
+                    btnPreview.Content = If(btnPreview.IsEnabled, "PREVIEW QUESTIONS", "NO QUESTIONS AVAILABLE")
+                Else
+                    btnPreview.Content = "PREVIEW UNAVAILABLE"
                 End If
 
                 ' Load the specific Rules (Timers) for this Exam
                 Await LoadRulesContext(_selectedExamId)
             Catch ex As Exception
+                btnPreview.Content = "PREVIEW UNAVAILABLE"
                 MessageBox.Show("Error loading exam details: " & ex.Message)
             End Try
         End Sub
@@ -145,10 +151,13 @@ Namespace Views.ReviewDirector
         End Sub
 
         Private Async Sub btnPreview_Click(sender As Object, e As RoutedEventArgs)
-            If _currentQuestions.Count = 0 Then Return
+            If _currentQuestions.Count = 0 Then
+                MessageBox.Show("No questions are available for this assessment.", "Question preview", MessageBoxButton.OK, MessageBoxImage.Information)
+                Return
+            End If
 
             Dim preview As New QuestionPreviewDialog()
-            preview.LoadItems(_currentQuestions, False)
+            preview.LoadItems(_currentQuestions)
 
             Await DialogHost.Show(preview, "MainDialogHost")
         End Sub

@@ -93,6 +93,7 @@ Namespace Components
             _isMasteryMode = False
             _examineesPerPoint.Clear()
             _attemptIndexPerUser.Clear()
+            _isoDatePerPoint.Clear()
 
             Dim accuracyFormatter As Func(Of ChartPoint, String) = Function(cp) $"({cp.Y:N2}%)"
 
@@ -118,11 +119,11 @@ Namespace Components
 
                     _examineesPerPoint(pointIdx) = If(row.examinee_ids, New List(Of Integer)())
 
-                    Dim userAttemptMap As New Dictionary(Of Integer, Integer)()
+                    Dim userAttemptMap As New Dictionary(Of Integer, Integer)(If(row.attempt_map, New Dictionary(Of Integer, Integer)()))
                     Dim ids = If(row.examinee_ids, New List(Of Integer)())
                     Dim idxs = If(row.attempt_indices, New List(Of Integer)())
                     For i = 0 To Math.Min(ids.Count, idxs.Count) - 1
-                        userAttemptMap(ids(i)) = idxs(i)
+                        If Not userAttemptMap.ContainsKey(ids(i)) Then userAttemptMap(ids(i)) = idxs(i)
                     Next
                     _attemptIndexPerUser(pointIdx) = userAttemptMap
                 Next
@@ -186,6 +187,10 @@ Namespace Components
 
                 Dim userAttemptMap As New Dictionary(Of Integer, Integer)()
                 _attemptIndexPerUser.TryGetValue(pointIndex, userAttemptMap)
+                If _currentUserId.HasValue AndAlso _currentUserId.Value > 0 AndAlso userAttemptMap IsNot Nothing Then
+                    Dim mappedAttempt As Integer
+                    If userAttemptMap.TryGetValue(_currentUserId.Value, mappedAttempt) Then attemptToPass = mappedAttempt
+                End If
 
                 RaiseEvent QuestionForensicsRequested(
                     Me,

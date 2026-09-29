@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="Components.UniversalStatsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -67,7 +67,7 @@
                                                     Height="4"
                                                     Margin="0,8"
                                                     Background="#DDD"
-                                                    Foreground="#B71C1C"
+                                                    Foreground="#176B5C"
                                                     Value="{Binding percentage}" />
 
                                                 <!--  Nested Topics (Slots) Breakdown  -->
@@ -164,7 +164,7 @@
                                                 <materialDesign:PackIcon
                                                     Width="18"
                                                     Height="18"
-                                                    Foreground="#6C5CE7"
+                                                    Foreground="#247968"
                                                     Kind="Brain" />
                                             </Button>
                                         </Grid>
@@ -177,7 +177,7 @@
                 <Border Padding="32,0,32,32">
                     <materialDesign:Card
                         Padding="24"
-                        Background="#F8F9FA"
+                        Background="#F7F8F4"
                         UniformCornerRadius="12">
                         <StackPanel>
                             <StackPanel Margin="0,0,0,12" Orientation="Horizontal">

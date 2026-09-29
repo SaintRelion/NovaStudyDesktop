@@ -33,7 +33,7 @@
                         x:Name="txtContext"
                         Margin="0,4,0,0"
                         FontSize="10"
-                        Foreground="#2196F3"
+                        Foreground="{StaticResource BrandPrimary}"
                         Text="Global Overview" />
                 </StackPanel>
             </Border>

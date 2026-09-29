@@ -117,10 +117,7 @@ End Class
 - id: `Integer`
 - question_text: `String`
 - correct_answer: `String`
-- option_a: `String`
-- option_b: `String`
-- option_c: `String`
-- option_d: `String`
+- choices: `Dictionary(Of String, String)`
 - answer: `String`
 ### RevieweeStatusIn
 - examination_id: `Integer`
@@ -213,10 +210,7 @@ End Class
 - is_correct: `Boolean`
 - previous_student_answer: `String`
 - previous_is_correct: `Boolean`
-- option_a_analysis: `String`
-- option_b_analysis: `String`
-- option_c_analysis: `String`
-- option_d_analysis: `String`
+- option_analysis: `Dictionary(Of String, String)`
 ### StatsRequest
 - user_id: `Integer`
 - examination_id: `Integer`

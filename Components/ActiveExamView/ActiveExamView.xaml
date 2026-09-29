@@ -76,7 +76,7 @@
                         Height="4"
                         Margin="0,6,0,0"
                         Background="#444"
-                        Foreground="#673AB7"
+                        Foreground="{StaticResource BrandPrimary}"
                         Maximum="100"
                         Minimum="0"
                         Value="0" />
@@ -87,7 +87,7 @@
                     Grid.Column="1"
                     Margin="24,0,0,0"
                     Padding="16,8"
-                    Background="#673AB7"
+                    Background="{StaticResource BrandPrimary}"
                     CornerRadius="8">
                     <TextBlock
                         x:Name="txtTimer"
@@ -105,64 +105,64 @@
             <!--  ── SINGLE QUESTION VIEW (per-question phase) ──  -->
             <Border
                 x:Name="pnlSingleQuestion"
-                Padding="40"
-                VerticalAlignment="Center"
-                Visibility="Visible">
-                <materialDesign:Card
-                    Padding="36"
-                    Background="White"
-                    UniformCornerRadius="14">
-                    <StackPanel>
+                Padding="24"
+                Visibility="Collapsed">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <materialDesign:Card
+                            Margin="0,0,8,0"
+                            Padding="28"
+                            Background="White"
+                            UniformCornerRadius="14">
+                            <StackPanel>
                         <TextBlock
                             x:Name="txtQuestionNumber"
                             Margin="0,0,0,6"
                             FontSize="12"
                             FontWeight="Bold"
-                            Foreground="#673AB7"
+                            Foreground="{StaticResource BrandPrimary}"
                             Text="QUESTION 1 OF 100" />
                         <TextBlock
                             x:Name="txtQuestionText"
                             Margin="0,0,0,24"
                             FontSize="17"
                             FontWeight="Medium"
-                            Text="Question text goes here."
+                            Text=""
                             TextWrapping="Wrap" />
 
-                        <RadioButton
-                            x:Name="rbA"
-                            Margin="0,6"
-                            Checked="Option_Checked"
-                            Tag="A" />
-                        <RadioButton
-                            x:Name="rbB"
-                            Margin="0,6"
-                            Checked="Option_Checked"
-                            Tag="B" />
-                        <RadioButton
-                            x:Name="rbC"
-                            Margin="0,6"
-                            Checked="Option_Checked"
-                            Tag="C" />
-                        <RadioButton
-                            x:Name="rbD"
-                            Margin="0,6"
-                            Checked="Option_Checked"
-                            Tag="D" />
+                        <ItemsControl x:Name="icCurrentChoices">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <RadioButton Margin="0,6" Checked="Option_Checked" GroupName="CurrentQuestion" IsChecked="{Binding IsSelected, Mode=TwoWay}">
+                                        <TextBlock TextWrapping="Wrap">
+                                            <Run FontWeight="Bold" Text="{Binding Label}" /><Run Text=". " /><Run Text="{Binding Text}" />
+                                        </TextBlock>
+                                    </RadioButton>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
-                        <Button
-                            x:Name="btnNext"
-                            Margin="0,28,0,0"
-                            Padding="16,0"
-                            HorizontalAlignment="Right"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            Background="#1A1A1A"
-                            Click="btnNext_Click"
-                            Content="NEXT QUESTION →"
-                            Foreground="White"
-                            Style="{StaticResource MaterialDesignRaisedButton}" />
-                    </StackPanel>
-                </materialDesign:Card>
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </ScrollViewer>
+                    <Button
+                        x:Name="btnNext"
+                        Grid.Row="1"
+                        Margin="0,12,8,0"
+                        Padding="16,0"
+                        HorizontalAlignment="Right"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Background="#1A1A1A"
+                        Click="btnNext_Click"
+                        Content="NEXT QUESTION →"
+                        Foreground="White"
+                        Style="{StaticResource MaterialDesignRaisedButton}" />
+                </Grid>
             </Border>
 
             <!--  ── REVIEW VIEW (all questions, scrollable) ──  -->
@@ -218,36 +218,17 @@
                                                 FontWeight="Medium"
                                                 Text="{Binding QuestionData.question_text}"
                                                 TextWrapping="Wrap" />
-                                            <StackPanel>
-                                                <RadioButton
-                                                    Margin="0,5"
-                                                    Checked="Option_Checked"
-                                                    Content="{Binding QuestionData.option_a}"
-                                                    GroupName="{Binding QuestionData.id}"
-                                                    IsChecked="{Binding SelectedAnswer, Mode=OneWay, Converter={StaticResource EqualityConverter}, ConverterParameter='A'}"
-                                                    Tag="A" />
-                                                <RadioButton
-                                                    Margin="0,5"
-                                                    Checked="Option_Checked"
-                                                    Content="{Binding QuestionData.option_b}"
-                                                    GroupName="{Binding QuestionData.id}"
-                                                    IsChecked="{Binding SelectedAnswer, Mode=OneWay, Converter={StaticResource EqualityConverter}, ConverterParameter='B'}"
-                                                    Tag="B" />
-                                                <RadioButton
-                                                    Margin="0,5"
-                                                    Checked="Option_Checked"
-                                                    Content="{Binding QuestionData.option_c}"
-                                                    GroupName="{Binding QuestionData.id}"
-                                                    IsChecked="{Binding SelectedAnswer, Mode=OneWay, Converter={StaticResource EqualityConverter}, ConverterParameter='C'}"
-                                                    Tag="C" />
-                                                <RadioButton
-                                                    Margin="0,5"
-                                                    Checked="Option_Checked"
-                                                    Content="{Binding QuestionData.option_d}"
-                                                    GroupName="{Binding QuestionData.id}"
-                                                    IsChecked="{Binding SelectedAnswer, Mode=OneWay, Converter={StaticResource EqualityConverter}, ConverterParameter='D'}"
-                                                    Tag="D" />
-                                            </StackPanel>
+                                            <ItemsControl ItemsSource="{Binding Choices}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <RadioButton Margin="0,5" Checked="Option_Checked" GroupName="{Binding QuestionId}" IsChecked="{Binding IsSelected, Mode=TwoWay}">
+                                                            <TextBlock TextWrapping="Wrap">
+                                                                <Run FontWeight="Bold" Text="{Binding Label}" /><Run Text=". " /><Run Text="{Binding Text}" />
+                                                            </TextBlock>
+                                                        </RadioButton>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
                                         </StackPanel>
                                     </Grid>
                                 </Border>

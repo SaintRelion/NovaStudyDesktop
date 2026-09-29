@@ -21,6 +21,10 @@ Namespace Views.ReviewDirector
             End Sub)
         End Sub
 
+        Private Sub SetLoadingMessage(message As String)
+            txtLoadingStatus.Text = message
+        End Sub
+
         Private Async Sub LoadRepository()
             SetLoading(True)
             Try
@@ -40,6 +44,7 @@ Namespace Views.ReviewDirector
                             groupView.SetCategory(cat.id, cat.name)
                             
                             AddHandler groupView.RequestLoading, AddressOf SetLoading
+                            AddHandler groupView.RequestLoadingMessage, AddressOf SetLoadingMessage
                             AddHandler groupView.AddTopicRequested, AddressOf HandleAddTopicRequested
                             AddHandler groupView.CategoryDeleted, AddressOf HandleCategoryDeleted
                             

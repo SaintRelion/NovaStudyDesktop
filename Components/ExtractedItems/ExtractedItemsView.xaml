@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="Components.ExtractedItemsViewer"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,7 +6,7 @@
     Background="{DynamicResource MaterialDesignPaper}">
 
     <UserControl.Resources>
-        <SolidColorBrush x:Key="CriminologyRed" Color="#B71C1C" />
+        <SolidColorBrush x:Key="BrandHighlight" Color="#176B5C" />
 
         <materialDesign:BooleanToVisibilityConverter
             x:Key="InvertedBoolToVis"
@@ -36,7 +36,7 @@
                         x:Name="txtViewerHeader"
                         FontSize="22"
                         FontWeight="Black"
-                        Foreground="{StaticResource CriminologyRed}"
+                        Foreground="{StaticResource BrandHighlight}"
                         Text="ITEM AUDIT" />
                     <TextBlock
                         x:Name="txtItemCount"

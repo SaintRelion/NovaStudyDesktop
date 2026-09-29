@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="Views.Admin.AddUserPopup"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -12,7 +12,7 @@
             Width="48"
             Height="48"
             HorizontalAlignment="Center"
-            Foreground="#B71C1C"
+            Foreground="#176B5C"
             Kind="AccountPlus" />
 
         <TextBlock
@@ -20,7 +20,7 @@
             HorizontalAlignment="Center"
             FontWeight="Black"
             Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-            Text="PERSONNEL ENLISTMENT" />
+            Text="ADD TEAM MEMBER" />
 
         <TextBox
             x:Name="txtRegUsername"
@@ -58,10 +58,10 @@
                 Style="{StaticResource MaterialDesignFlatButton}" />
             <Button
                 x:Name="btnEnlist"
-                Background="#B71C1C"
-                BorderBrush="#B71C1C"
+                Background="#176B5C"
+                BorderBrush="#176B5C"
                 Click="Enlist_Click"
-                Content="COMPLETE ENLISTMENT"
+                Content="ADD MEMBER"
                 FontWeight="Bold" />
         </StackPanel>
 
@@ -69,7 +69,7 @@
             x:Name="lblStatus"
             Margin="0,12,0,0"
             FontSize="11"
-            Foreground="#B71C1C"
+            Foreground="#E05275"
             TextAlignment="Center"
             TextWrapping="Wrap" />
     </StackPanel>

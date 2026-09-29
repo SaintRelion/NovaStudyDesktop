@@ -21,7 +21,7 @@ Namespace Views.Auth
             End If
 
             btnRequestToken.IsEnabled = False
-            lblResetStatus.Text = "Synchronizing with authentication server..."
+            lblResetStatus.Text = "Sending your verification code..."
 
             Try
                 Dim req As New PasswordResetRequest With {.email = txtResetEmail.Text}
@@ -33,7 +33,7 @@ Namespace Views.Auth
                     ' Flip to verification panel
                     pnlRequest.Visibility = Visibility.Collapsed
                     pnlVerify.Visibility = Visibility.Visible
-                    lblResetStatus.Text = "Token dispatched. Check your inbox."
+                    lblResetStatus.Text = "Code sent. Check your inbox."
                     lblResetStatus.Foreground = New SolidColorBrush(Colors.Gray)
                 Else
                     lblResetStatus.Text = $"Request Denied: {response.ErrorMessage}"
@@ -56,7 +56,7 @@ Namespace Views.Auth
             End If
 
             btnConfirmReset.IsEnabled = False
-            lblResetStatus.Text = "Updating forensic credentials..."
+            lblResetStatus.Text = "Updating your password..."
 
             Try
                 ' Model matches SR-LEXICON PasswordResetConfirm
@@ -69,7 +69,7 @@ Namespace Views.Auth
                 Dim response = Await AuthRepo.confirm_resetAsync(req)
 
                 If response.Success Then
-                    MessageBox.Show("Dossier updated. Access key synchronized.", "SUCCESS", MessageBoxButton.OK, MessageBoxImage.Information)
+                    MessageBox.Show("Your password has been updated.", "Password updated", MessageBoxButton.OK, MessageBoxImage.Information)
                     RaiseEvent RequestNavigateToLogin(Me, EventArgs.Empty)
                 Else
                     lblResetStatus.Text = $"Update Failure: {response.ErrorMessage}"

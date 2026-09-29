@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="Views.Admin.ManageUsersView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,7 +6,7 @@
     Background="{DynamicResource MaterialDesignPaper}">
 
     <UserControl.Resources>
-        <SolidColorBrush x:Key="CriminologyRed" Color="#B71C1C" />
+        <SolidColorBrush x:Key="BrandHighlight" Color="#176B5C" />
     </UserControl.Resources>
 
     <materialDesign:DialogHost x:Name="HostAddUser" Identifier="AddUserHost">
@@ -23,14 +23,14 @@
                             Width="32"
                             Height="32"
                             VerticalAlignment="Center"
-                            Foreground="{StaticResource CriminologyRed}"
+                            Foreground="{StaticResource BrandHighlight}"
                             Kind="ShieldAccount" />
                         <TextBlock
                             Margin="12,0,0,0"
                             VerticalAlignment="Center"
                             FontWeight="Black"
                             Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                            Text="PERSONNEL DATABASE" />
+                            Text="People and access" />
 
                         <Border
                             Margin="16,0,0,0"
@@ -42,7 +42,7 @@
                                 FontSize="10"
                                 FontWeight="Bold"
                                 Foreground="#666"
-                                Text="ADMIN ACCESS" />
+                                Text="ADMIN WORKSPACE" />
                         </Border>
                     </StackPanel>
 
@@ -50,7 +50,7 @@
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
                         Click="OpenAddUser_Click"
-                        Content="ADD PERSONNEL"
+                        Content="ADD MEMBER"
                         FontSize="12"
                         FontWeight="Bold"
                         Style="{StaticResource MaterialDesignRaisedButton}">
@@ -58,7 +58,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon VerticalAlignment="Center" Kind="AccountPlus" />
-                                    <TextBlock Margin="8,0,0,0" Text="ENLIST PERSONNEL" />
+                                    <TextBlock Margin="8,0,0,0" Text="ADD MEMBER" />
                                 </StackPanel>
                             </DataTemplate>
                         </Button.ContentTemplate>
@@ -118,8 +118,8 @@
 
                                             <Button
                                                 Click="DeleteUser_Click"
-                                                Content="PURGE"
-                                                Foreground="{StaticResource CriminologyRed}"
+                                                Content="REMOVE"
+                                                Foreground="{StaticResource BrandHighlight}"
                                                 IsEnabled="{Binding IsNotMe}"
                                                 Style="{StaticResource MaterialDesignFlatButton}"
                                                 Tag="{Binding id}" />

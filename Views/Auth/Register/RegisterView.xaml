@@ -1,60 +1,65 @@
-<UserControl
+﻿<UserControl
     x:Class="Views.Auth.RegisterView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
-    <Grid Background="#121212">
+    <Grid Background="{StaticResource AppCanvas}">
+        <Grid.RowDefinitions><RowDefinition Height="150" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+        <Border Grid.Row="0" Margin="22,22,22,0" Background="{StaticResource BrandDeep}" CornerRadius="16,16,0,0">
+            <StackPanel Margin="36,22">
+                <TextBlock FontSize="19" FontWeight="Bold" Foreground="White" Text="nova study" />
+                <TextBlock Margin="0,14,0,0" FontSize="24" FontWeight="SemiBold" Foreground="White" Text="Create your workspace account" />
+            </StackPanel>
+        </Border>
         <materialDesign:Card
-            MinWidth="380"
-            MaxWidth="450"
-            Margin="16"
+            Grid.Row="1"
+            MinWidth="420"
+            MaxWidth="560"
+            Margin="22,-20,22,22"
             Padding="32"
             HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            materialDesign:ElevationAssist.Elevation="Dp6"
-            UniformCornerRadius="2">
+            VerticalAlignment="Stretch"
+            UniformCornerRadius="12">
 
             <ScrollViewer materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True" VerticalScrollBarVisibility="Auto">
                 <StackPanel>
                     <materialDesign:PackIcon
-                        Width="48"
-                        Height="48"
-                        Margin="0,0,0,16"
-                        HorizontalAlignment="Center"
-                        Foreground="#B71C1C"
+                        Width="28"
+                        Height="28"
+                        Margin="0,0,0,10"
+                        Foreground="{StaticResource BrandPrimary}"
                         Kind="AccountPlus" />
 
                     <TextBlock
                         Margin="0,0,0,24"
-                        HorizontalAlignment="Center"
-                        FontWeight="Black"
-                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                        Text="PERSONNEL ENLISTMENT"
-                        TextAlignment="Center" />
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource AppInk}"
+                        Text="Account details" />
 
                     <TextBox
                         x:Name="txtRegUsername"
                         Margin="0,0,0,16"
-                        materialDesign:HintAssist.Hint="Desired Username"
+                        materialDesign:HintAssist.Hint="Username"
                         Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
 
                     <TextBox
                         x:Name="txtRegEmail"
                         Margin="0,0,0,16"
-                        materialDesign:HintAssist.Hint="Official Email Address"
+                        materialDesign:HintAssist.Hint="Email address"
                         Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
 
                     <PasswordBox
                         x:Name="txtRegPassword"
                         Margin="0,0,0,16"
-                        materialDesign:HintAssist.Hint="Secure Access Key"
+                        materialDesign:HintAssist.Hint="Password"
                         Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" />
 
                     <ComboBox
                         x:Name="cmbRole"
                         Margin="0,0,0,32"
-                        materialDesign:HintAssist.Hint="Assigned Role / Clearance"
+                        materialDesign:HintAssist.Hint="Workspace role"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}">
                         <ComboBoxItem Content="Reviewee" IsSelected="True" />
                         <ComboBoxItem Content="ReviewDirector" />
@@ -64,10 +69,10 @@
                     <Button
                         x:Name="btnRegister"
                         Height="50"
-                        Background="#B71C1C"
-                        BorderBrush="#B71C1C"
+                        Background="#176B5C"
+                        BorderBrush="#176B5C"
                         Click="Register_Click"
-                        Content="COMPLETE ENLISTMENT"
+                        Content="Create account"
                         FontWeight="Bold" />
 
                     <TextBlock
@@ -76,15 +81,15 @@
                         HorizontalAlignment="Center"
                         FontSize="12"
                         FontWeight="SemiBold"
-                        Foreground="#B71C1C"
+                        Foreground="#E05275"
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
 
                     <Button
                         Margin="0,8,0,0"
                         Click="BackToLogin_Click"
-                        Content="Return to Security Terminal"
-                        Foreground="#666"
+                        Content="Back to sign in"
+                        Foreground="#176B5C"
                         Style="{StaticResource MaterialDesignFlatButton}" />
                 </StackPanel>
             </ScrollViewer>

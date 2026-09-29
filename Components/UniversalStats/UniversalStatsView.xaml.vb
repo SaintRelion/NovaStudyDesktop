@@ -83,7 +83,7 @@ Namespace Components
         Private Sub btnDeepAnalysis_Click(sender As Object, e As RoutedEventArgs)
             e.Handled = True
             If _currentUserId <= 0 Then
-                MessageBox.Show("Please select a specific reviewee to view AI forensics.", "Select Reviewee", MessageBoxButton.OK, MessageBoxImage.Information)
+                MessageBox.Show("Please select a learner to view the detailed response analysis.", "Select learner", MessageBoxButton.OK, MessageBoxImage.Information)
                 Return
             End If
 
