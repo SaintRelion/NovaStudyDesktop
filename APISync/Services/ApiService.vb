@@ -6,7 +6,7 @@ Imports System.Net.Http
     Namespace APISync.Services
         Public Class ApiService
             Private Shared ReadOnly _httpClient As New HttpClient()
-            Public Shared Property BaseUrl As String = "http://127.0.0.1:8000/"
+            Public Shared Property BaseUrl As String = "https://smartprep_demo.srecosystem.space/"
             Shared Sub New()
                 _httpClient.Timeout = TimeSpan.FromMinutes(5)
             End Sub
