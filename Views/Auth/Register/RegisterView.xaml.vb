@@ -18,13 +18,13 @@ Namespace Views.Auth
             If String.IsNullOrWhiteSpace(txtRegUsername.Text) OrElse 
                String.IsNullOrWhiteSpace(txtRegPassword.Password) OrElse 
                String.IsNullOrWhiteSpace(txtRegEmail.Text) Then
-                lblRegStatus.Text = "Requirement Failure: All fields must be populated."
+                lblRegStatus.Text = "Please enter your username, email address, and password."
                 Return
             End If
 
             ' UI State
             btnRegister.IsEnabled = False
-            lblRegStatus.Text = "Synchronizing with Central Database..."
+            lblRegStatus.Text = "Creating your account..."
 
             Try
                 Dim selectedRole As String = CType(cmbRole.SelectedItem, ComboBoxItem).Content.ToString()
@@ -41,7 +41,7 @@ Namespace Views.Auth
                 Dim response = Await AuthRepo.registerAsync(regReq)
 
                 If response.Success Then
-                    MessageBox.Show("Your account is ready. You can now sign in.", "Account created", MessageBoxButton.OK, MessageBoxImage.Information)
+                    MessageBox.Show("Your account has been created. Ask your workspace administrator to activate it before signing in.", "Account created", MessageBoxButton.OK, MessageBoxImage.Information)
                     RaiseEvent RequestNavigateToLogin(Me, EventArgs.Empty)
                 Else
                     lblRegStatus.Text = $"Account could not be created: {response.ErrorMessage}"
@@ -49,7 +49,7 @@ Namespace Views.Auth
                 End If
 
             Catch ex As Exception
-                lblRegStatus.Text = "System Error: Registration server unreachable."
+                lblRegStatus.Text = "We could not reach the server. Please try again."
                 btnRegister.IsEnabled = True
             End Try
         End Sub

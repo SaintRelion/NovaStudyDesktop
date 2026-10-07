@@ -3,48 +3,52 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     Background="{StaticResource AppCanvas}">
-    <Grid>
-        <Grid.RowDefinitions><RowDefinition Height="2.2*" /><RowDefinition Height="1.8*" /></Grid.RowDefinitions>
-        <Border Grid.Row="0" Margin="22,22,22,0" Background="{StaticResource BrandDeep}" CornerRadius="18,18,0,0">
-            <Grid Margin="64,34,64,44">
-                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
-                <Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="28" MaxWidth="1180" VerticalAlignment="Center">
+            <Grid.RowDefinitions><RowDefinition Height="230"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+            <Border Background="{StaticResource BrandDeep}" CornerRadius="20">
+                <Grid Margin="32,24">
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal">
-                        <Border Width="38" Height="38" Background="{StaticResource BrandAccent}" CornerRadius="8">
-                            <materialDesign:PackIcon Width="21" Height="21" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Kind="BookEducationOutline" />
+                        <Border Width="36" Height="36" Background="{StaticResource BrandAccent}" CornerRadius="10">
+                            <materialDesign:PackIcon Kind="BookEducationOutline" Width="22" Height="22" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Foreground="White" Text="nova study" />
+                        <TextBlock Text="nova study" FontSize="20" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" Margin="10,0,0,0"/>
                     </StackPanel>
-                    <Button x:Name="btnExit" Width="42" Height="42" Padding="0" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Exit_Click" Foreground="#C7DDD3" ToolTip="Close application" Style="{StaticResource MaterialDesignFlatButton}">
-                        <materialDesign:PackIcon Width="22" Height="22" Kind="Close" />
+                    <Button x:Name="btnExit" Width="34" Height="34" Padding="0" HorizontalAlignment="Right" Click="Exit_Click" ToolTip="Close application" Foreground="#C8DFD5" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="Close" Width="20" Height="20"/>
                     </Button>
-                </Grid>
-                <StackPanel Grid.Row="1" VerticalAlignment="Bottom" MaxWidth="820" HorizontalAlignment="Left">
-                    <TextBlock FontSize="11" FontWeight="Bold" Foreground="#9BD2BE" Text="ASSESSMENT WORKSPACE" />
-                    <TextBlock Margin="0,14,0,0" FontSize="48" FontWeight="SemiBold" Foreground="White" LineHeight="54" Text="From source material&#x0a;to stronger understanding." TextWrapping="Wrap" />
-                    <TextBlock Margin="0,18,0,0" MaxWidth="640" FontSize="15" Foreground="#C8DFD5" Text="A clear working space for educators building assessments and learners reviewing what they know." TextWrapping="Wrap" />
-                </StackPanel>
-            </Grid>
-        </Border>
-        <Border Grid.Row="1" Margin="22,0,22,22" Background="{StaticResource AppSurface}" CornerRadius="0,0,18,18">
-            <Grid Margin="64,32,64,30">
-                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
-                <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="{StaticResource AppInk}" Text="Enter your workspace" />
-                <Grid Grid.Row="1" Margin="0,22,0,0">
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="18" /><ColumnDefinition Width="*" /><ColumnDefinition Width="18" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                    <TextBox x:Name="txtUsername" Grid.Column="0" Height="48" materialDesign:HintAssist.Hint="Username" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
-                    <PasswordBox x:Name="txtPassword" Grid.Column="2" Height="48" materialDesign:HintAssist.Hint="Password" Style="{StaticResource MaterialDesignOutlinedPasswordBox}" />
-                    <Button x:Name="btnLogin" Grid.Column="4" MinWidth="180" Height="48" Background="{StaticResource BrandPrimary}" BorderBrush="{StaticResource BrandPrimary}" Click="Login_Click" Content="Enter workspace" FontWeight="SemiBold" />
-                </Grid>
-                <Grid Grid.Row="2" Margin="0,14,0,0" VerticalAlignment="Top">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock VerticalAlignment="Center" Foreground="{StaticResource AppMuted}" Text="New to NovaStudy?" />
-                        <Button Margin="5,0,0,0" Padding="6,2" Click="ShowSignup_Click" Content="Create an account" Foreground="{StaticResource BrandPrimary}" Style="{StaticResource MaterialDesignFlatButton}" />
-                        <Button Margin="18,0,0,0" Click="ForgotPassword_Click" Content="Reset password" Foreground="{StaticResource BrandPrimary}" Style="{StaticResource MaterialDesignFlatButton}" />
+                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12,0,12,24">
+                        <TextBlock Text="YOUR ASSESSMENT WORKSPACE" FontSize="10" FontWeight="Bold" Foreground="#9BD2BE" TextAlignment="Center"/>
+                        <TextBlock Text="Make room for your next discovery." FontSize="36" FontWeight="SemiBold" Foreground="White" TextAlignment="Center" TextWrapping="Wrap" Margin="0,12,0,10"/>
+                        <TextBlock Text="Your materials, practice, and progress. One place to move forward." FontSize="14" Foreground="#C8DFD5" TextAlignment="Center" TextWrapping="Wrap"/>
                     </StackPanel>
-                    <TextBlock x:Name="lblStatus" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12" FontWeight="SemiBold" Foreground="#B4494C" />
                 </Grid>
-            </Grid>
-        </Border>
-    </Grid>
+            </Border>
+            <Border Grid.Row="1" Width="560" MaxWidth="560" HorizontalAlignment="Center" Margin="0,-34,0,0" Padding="32,26" Background="White" BorderBrush="{StaticResource AppBorder}" BorderThickness="1" CornerRadius="16">
+                <Border.Effect><DropShadowEffect BlurRadius="22" ShadowDepth="5" Opacity="0.08" Color="#173D3C"/></Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="Welcome back" FontSize="25" FontWeight="SemiBold" Foreground="{StaticResource AppInk}"/>
+                    <TextBlock Text="Sign in to continue your learning journey." FontSize="13" Foreground="{StaticResource AppMuted}" Margin="0,6,0,22" TextWrapping="Wrap"/>
+                    <TextBlock Text="Username" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource AppInk}" Margin="0,0,0,6"/>
+                    <TextBox x:Name="txtUsername" Height="48" Padding="14,0" VerticalContentAlignment="Center" FontSize="14" materialDesign:HintAssist.Hint="Enter your username" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,16"/>
+                    <Grid Margin="0,0,0,6">
+                        <TextBlock Text="Password" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource AppInk}" VerticalAlignment="Center"/>
+                        <Button Click="ForgotPassword_Click" Content="Forgot password?" FontSize="12" Height="26" Padding="0" HorizontalAlignment="Right" Foreground="{StaticResource BrandPrimary}" Style="{StaticResource MaterialDesignFlatButton}"/>
+                    </Grid>
+                    <PasswordBox x:Name="txtPassword" Height="48" Padding="14,0" VerticalContentAlignment="Center" FontSize="14" materialDesign:HintAssist.Hint="Enter your password" Style="{StaticResource MaterialDesignOutlinedPasswordBox}"/>
+                    <Button x:Name="btnLogin" Height="48" Margin="0,22,0,0" Background="{StaticResource BrandPrimary}" BorderBrush="{StaticResource BrandPrimary}" Foreground="White" Click="Login_Click" IsDefault="True" FontSize="14" FontWeight="SemiBold">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="Enter workspace" VerticalAlignment="Center"/><materialDesign:PackIcon Kind="ArrowRight" Width="20" Height="20" Margin="12,0,0,0" VerticalAlignment="Center"/></StackPanel>
+                    </Button>
+                    <TextBlock x:Name="lblStatus" Margin="0,10,0,0" FontSize="12" Foreground="#B4494C" TextWrapping="Wrap" TextAlignment="Center"/>
+                    <Border Margin="0,16,0,0" Padding="0,12,0,0" BorderBrush="{StaticResource AppBorder}" BorderThickness="0,1,0,0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="New to NovaStudy?" FontSize="12" Foreground="{StaticResource AppMuted}" VerticalAlignment="Center"/>
+                            <Button Click="ShowSignup_Click" Content="Create an account" FontSize="12" Margin="4,0,0,0" Padding="8,4" Foreground="{StaticResource BrandPrimary}" Style="{StaticResource MaterialDesignFlatButton}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
 </UserControl>

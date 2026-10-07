@@ -69,7 +69,7 @@ Demo Backend
 Personal Infrastructure
        |
        +-- Django REST Framework
-       +-- MySQL
+       +-- PostgreSQL / CloudNativePG
        +-- Redis / Celery
        +-- OpenRouter
 ```
@@ -93,7 +93,7 @@ architecture of the complete system.
 ### Backend and infrastructure
 
 -   Django REST Framework
--   MySQL
+-   PostgreSQL / CloudNativePG
 -   Redis + Celery
 -   OpenRouter-backed LLM workflows
 -   Docker
@@ -139,7 +139,7 @@ dotnet publish -c Release -r win-x64 --self-contained true
 ```
 
 The API endpoint used by the compiled client is configured through
-`ApiService.BaseUrl`.
+`ApiService.BaseUrl`: `https://novastudy-django.srecosystem.space/`.
 
 ## Author
 
