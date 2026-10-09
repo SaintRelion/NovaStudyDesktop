@@ -1,149 +1,84 @@
-# SmartPrep Modern
+# NovaStudy Desktop
 
-SmartPrep Modern is the Windows desktop client for **NovaStudy**, a
-source-grounded assessment and learning platform. It provides
-role-specific workflows for instructors, learners, and administrators.
+NovaStudy is a Windows assessment workspace for educators preparing exams from supplied material and for learners taking those exams and reviewing their progress. The desktop client brings the learning library, assessment setup, timed sessions, and analysis into one role-specific interface. I developed the original end-to-end system and later reengineered this portfolio edition.
 
-> **Project context:** The platform was developed as an end-to-end
-> desktop and backend system combining assessment workflows, analytics,
-> document processing, background jobs, and source-grounded LLM
-> analysis.
+**Client project · Reengineered portfolio edition.** The client permitted a public portfolio presentation. NovaStudy uses generalized branding and fictional demonstration records; no client documents or records are included here. The portfolio edition connects to infrastructure separate from the client's installation. Changes described below were made later and do not imply they were delivered to the client. There is no standalone browser deployment of the WPF app; the HTML previews below are offline representations, not a live product demo.
 
-## Project evolution
+## Original delivery and constraints
 
-The original version used local Ollama inference with a Qwen model.
-Limited local hardware led to an AWS G6 GPU deployment, while queued
-background processing allowed analytical work to continue without
-keeping the inference server online continuously.
+The original desktop-and-backend system was developed in under two months for a subject-specific assessment workflow. Local inference with Ollama and Qwen met the initial hardware requirement, but limited capacity led to an AWS G6 GPU. Keeping that server available was costly, so queued analysis could run when it was online. A heuristic questionnaire extractor prioritized quick uploads when model-backed extraction was too slow. Those choices supported the original delivery but added operational and extraction complexity.
 
-The current NovaStudy version is a broader technical and product
-rebuild. The desktop was redesigned and generalized from its original
-subject-specific presentation, while the backend moved to Django REST
-Framework, OpenRouter, and event-triggered Redis/Celery processing.
+## Selected workflows
 
-## Key features
+<!-- portfolio:showcase:start -->
 
--   **Questionnaire-based assessments** --- organize source material by
-    category and topic, upload human-prepared questionnaires, and
-    configure examinations from the supplied questions.
--   **Exam delivery** --- learners can take configured examinations and
-    submit answers through the desktop client.
--   **Performance analytics** --- dashboards for exam results,
-    comparative performance, growth trends, and leaderboards.
--   **Question forensics** --- per-question distributions and deeper
-    attempt/item analysis for identifying strengths and problem areas.
--   **AI-assisted analysis** --- structured performance summaries,
-    source-grounded explanations, and recommendations produced from
-    assessment data and supplied learning materials.
--   **Role-based workflows** --- dedicated interfaces for
-    administrators, instructors, and learners.
+<!-- portfolio:feature learning-library -->
+## Learning library
 
-## Screenshots
+An educator organizes source material and a human-authored questionnaire into topic slots. The client shows upload and processing state, previews extracted questions, warns before replacing questions, and blocks replacement when an active assessment depends on the slot. PDF is recommended when Word layout could affect extraction. The model extracts supplied questions; it does not invent the questionnaire.
 
-> Screenshots will be added from the redesigned portfolio version using
-> non-confidential data.
+<!-- portfolio:preview showcase_html/learning-library.html -->
 
-```{=html}
-<!-- Suggested screenshots:
-1. Main dashboard
-2. Topic/source management
-3. Exam configuration or exam session
-4. Performance analytics / growth trends
-5. Question forensics / AI analysis
--->
-```
-## Architecture
+<!-- portfolio:feature assessment-builder -->
+## Assessment builder
 
-SmartPrep is a client-server system. The Windows desktop application
-communicates with a separately hosted Django REST backend responsible
-for assessment workflows, document processing, persistence, background
-analysis, and LLM-assisted features.
+An educator stages ready topic slots, chooses how many existing questions to draw from each, and can randomize their order. The current builder checks each slot's available count and requires exactly 100 questions before generating an assessment. The smaller offline preview demonstrates that validation without creating a real exam.
 
-``` text
-SmartPrep Modern
-WPF / .NET 9
-       |
-       | REST API
-       v
-Demo Backend
-Personal Infrastructure
-       |
-       +-- Django REST Framework
-       +-- PostgreSQL / CloudNativePG
-       +-- Redis / Celery
-       +-- OpenRouter
-```
+<!-- portfolio:preview showcase_html/assessment-builder.html -->
 
-The desktop client keeps API communication separate from the UI through
-domain repositories, shared HTTP services, and request/response models.
+<!-- portfolio:feature timed-assessment -->
+## Timed assessment
 
-The backend source code and deployment infrastructure are maintained
-privately. Their technologies are documented here to show the
-architecture of the complete system.
+A learner answers one question at a time against a per-question timer, then enters a separate review phase to revisit responses before submission. Choices come from the uploaded questionnaire rather than a fixed A–D layout. Unanswered questions are treated as incorrect when the attempt is submitted or times out. The preview uses three fictional questions for a short interaction; the desktop uses the configured assessment and timing rules.
 
-## Technology stack
+<!-- portfolio:preview showcase_html/timed-assessment.html -->
 
-### Desktop client
+<!-- portfolio:feature progress-analysis -->
+## Progress and item analysis
 
--   WPF / VB.NET / .NET 9
--   Material Design
--   LiveCharts
--   REST API communication
+Educators and learners can select an attempt on the progress chart to inspect question-level answer distributions and available AI analysis. The desktop opens item analysis in the main content area, supports sorting and expanded question details, and keeps deeper attempt forensics as a separate view. Analysis depends on submitted results and background processing; it may not be available immediately.
 
-### Backend and infrastructure
+<!-- portfolio:preview showcase_html/progress-analysis.html -->
 
--   Django REST Framework
--   PostgreSQL / CloudNativePG
--   Redis + Celery
--   OpenRouter-backed LLM workflows
--   Docker
+<!-- portfolio:showcase:end -->
 
-## Run SmartPrep
+## Engineering changes in this edition
 
-SmartPrep Modern is distributed as a self-contained **Windows x64**
-application.
+The interface was generalized and redesigned as a desktop workspace with top navigation and a new visual identity. Exam loading now validates question data before starting the timer; upload states, question previews, and item-analysis navigation were revised to provide clearer feedback. The backend moved from FastAPI and raw SQL to Django REST Framework and migrations. OpenRouter replaces the dedicated GPU inference path, while Redis and Celery remain for asynchronous document and analysis jobs.
 
-1.  Download the latest build from this repository's **Releases** page.
-2.  Extract `SmartPrepModern-v1.0.0-win-x64.zip`.
-3.  Run `SmartPrepModern.exe`.
+These are changes in the portfolio edition, not claims about the original client installation. The release and deployment process is structured, but the presence of Docker or Kubernetes alone is not a production-readiness guarantee.
 
-A separate .NET runtime installation is not required.
+## Architecture and tradeoffs
 
-The released application connects to the hosted SmartPrep backend; no
-local backend or Docker setup is required to run the distributed client.
+The WPF/VB.NET client targets .NET 9 and calls a separately hosted Django REST API through shared HTTP services, repositories, and request/response models. PostgreSQL stores application data; Redis and Celery handle work that should not block the API; OpenRouter supplies model-assisted extraction and analysis. Material Design styles and LiveCharts support the desktop UI.
 
-## Local development
+A desktop app fits the original Windows workflow, but limits access to Windows and requires separate client releases. Hosted inference removes dedicated GPU maintenance but adds network and provider dependency. The exactly-100-item builder rule is still a product constraint worth revisiting for more general assessments. The desktop's configured API endpoint is compiled into `APISync/Services/ApiService.vb`, so switching environments currently requires changing the client configuration or build.
 
-This section is only needed when building or modifying the desktop
-client.
+## Release lifecycle
 
-Requirements:
+This repository builds the Windows client; the Django backend has its own repository and release process. There is no frontend website image or database migration in the desktop build. Backend migrations and deployment are coordinated separately. Local desktop development can point the API service at a compatible local backend; the current client source points to the portfolio backend. No staging environment is documented for this desktop project.
 
--   Windows
--   .NET 9 SDK
--   Visual Studio with the .NET desktop development workload, or the
-    .NET CLI
--   Access to a compatible SmartPrep API endpoint
+## Known limitations
 
-From the repository root:
+The app requires Windows and a reachable compatible API. Document extraction and AI analysis depend on backend jobs and may finish after the initial request. The HTML demos are isolated illustrations: they make no API calls, do not authenticate, and do not save data. They are not evidence of backup, recovery, high availability, or security certification.
 
-``` powershell
+## Run and develop
+
+For a distributed build, use this repository's Windows x64 release archive if available, extract it, and launch `SmartPrepModern.exe`. The current source builds with the .NET 9 SDK on Windows:
+
+```powershell
 dotnet restore
 dotnet run
 ```
 
-To produce a release build:
+To publish a self-contained Windows build:
 
-``` powershell
+```powershell
 dotnet publish -c Release -r win-x64 --self-contained true
 ```
 
-The API endpoint used by the compiled client is configured through
-`ApiService.BaseUrl`: `https://novastudy-django.srecosystem.space/`.
+Set `ApiService.BaseUrl` in `APISync/Services/ApiService.vb` for the backend you intend to use. Running the desktop client does not start Django, PostgreSQL, Redis, or Celery.
 
 ## Author
 
-**June Aurelius Jacinto**\
-Full-Stack Software Developer
-
-GitHub: https://github.com/SaintRelion
+June Aurelius Jacinto · Full-Stack Software Developer · [GitHub](https://github.com/SaintRelion)
